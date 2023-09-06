@@ -14,7 +14,6 @@ import lombok.Setter;
 @Table(name = "foods")
 public class Food {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "food_name")
