@@ -1,25 +1,18 @@
 package com.example.shopping.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "foods")
-public class Food {
-    @Id
-    private Integer id;
-
-    @Column(name = "food_name")
-    private String name;
-
-    private Double price;
-
-    private String imageUrl;
+@NoArgsConstructor
+@DiscriminatorValue("food")
+public class Food extends AbstractProduct {
+    public Food(String name, Double price, Integer quantity, String imageUrl, ShoppingCart cart) {
+        super(name, price, quantity, imageUrl, cart);
+    }
 }
