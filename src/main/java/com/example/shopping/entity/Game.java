@@ -13,6 +13,6 @@ import lombok.Setter;
 @DiscriminatorValue("game")
 public class Game extends AbstractProduct {
     public Game(String name, Double price, Integer quantity, String imageUrl, ShoppingCart cart) {
-        super(name, price, quantity, imageUrl, cart);
+        super(null, name, price, quantity, imageUrl, cart);
     }
 }
