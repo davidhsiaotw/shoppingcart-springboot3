@@ -22,7 +22,7 @@ public class FakeData {
             Random random = new Random();
             int numberOfItems = random.nextInt(0, 11);
             List<AbstractProduct> fakeProducts = new ArrayList<>(numberOfItems);
-            for (int j = 0; j <= numberOfItems; j++) {
+            for (int j = 0; j < numberOfItems; j++) {
                 // choose a kind of product type
                 List<String> names = FOOD_NAMES;
                 List<String> images = FOOD_IMAGE_RESOURCES;
