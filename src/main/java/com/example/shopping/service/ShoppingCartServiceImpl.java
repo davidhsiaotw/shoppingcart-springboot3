@@ -1,44 +1,46 @@
 package com.example.shopping.service;
 
 import com.example.shopping.data.FakeData;
+import com.example.shopping.entity.AbstractProduct;
 import com.example.shopping.entity.ShoppingCart;
+import com.example.shopping.repository.ProductRepository;
 import com.example.shopping.repository.ShoppingCartRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Autowired
-    private ShoppingCartRepository repository;
+    private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     /**
      * Create fake data of shopping carts, only if table is empty.
      */
     @Override
     public void createFake() {
-        if (repository.count() == 0)
-            repository.saveAll(FakeData.getInstance().shoppingCarts);
+        if (shoppingCartRepository.count() == 0)
+            shoppingCartRepository.saveAll(FakeData.getInstance().shoppingCarts);
     }
 
     /**
      * Create a shopping cart with generated UUID.
      *
-     * @param cart a shopping cart
      * @return generated UUID
      */
     @Override
-    public String create(@NotNull ShoppingCart cart) {
+    public String create() {
         String uuid = UUID.randomUUID().toString();
-        cart.setId(uuid);
-        repository.save(cart);
+        ShoppingCart cart = new ShoppingCart(uuid);
+        shoppingCartRepository.save(cart);
         return uuid;
     }
 
@@ -50,7 +52,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      */
     @Override
     public ShoppingCart get(String id) {
-        Optional<ShoppingCart> opt = repository.findById(id);
+        Optional<ShoppingCart> opt = shoppingCartRepository.findById(id);
         return opt.orElse(null);
     }
 
@@ -61,6 +63,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      */
     @Override
     public void update(ShoppingCart cart) {
-        repository.save(cart);
+        cart.getProducts().forEach(product -> {
+            if (product.getId() == null) product.setId(UUID.randomUUID().toString());
+        });
+
+        Optional<ShoppingCart> opt = shoppingCartRepository.findById(cart.getId());
+        if (opt.isPresent()) {
+            Map<String, AbstractProduct> databaseProducts = opt.get().getProducts().stream().collect(Collectors.toMap(AbstractProduct::getId, product -> product));
+            Map<String, AbstractProduct> inputProducts = cart.getProducts().stream().collect(Collectors.toMap(AbstractProduct::getId, product -> product));
+            // find products that is present in database but not in input
+            List<AbstractProduct> removingProducts = databaseProducts.entrySet().stream()
+                    .filter(entry -> !inputProducts.containsKey(entry.getKey()))
+                    .map(Map.Entry::getValue).toList();
+            removingProducts.forEach(p -> p.setCart(null));
+            productRepository.deleteAll(removingProducts);
+
+            shoppingCartRepository.save(cart);
+        }
     }
 }

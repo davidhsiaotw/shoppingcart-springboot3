@@ -5,7 +5,7 @@ import com.example.shopping.entity.ShoppingCart;
 public interface ShoppingCartService {
     void createFake();
 
-    String create(ShoppingCart cart);
+    String create();
 
     ShoppingCart get(String id);
 
