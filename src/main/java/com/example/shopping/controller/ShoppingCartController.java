@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * @see <a href="http://localhost:8080/swagger-ui/index.html">API Doc</a>
+ */
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/carts")
@@ -18,14 +21,15 @@ public class ShoppingCartController {
      *
      * @return response with UUID of the shopping cart and http status
      */
+
     @GetMapping("create")
     public ResponseEntity<String> create() {
-        try{
+        try {
             return new ResponseEntity<>(service.create(), HttpStatus.CREATED);
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("ShoppingCartController.create catches exception");
             System.out.println(e.getMessage());
-            return  new ResponseEntity<>("create failed", HttpStatus.CREATED);
+            return new ResponseEntity<>("create failed", HttpStatus.CREATED);
         }
     }
 
